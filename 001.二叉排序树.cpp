@@ -10,6 +10,7 @@
 
 #define KEY(node) node ? node->key : 0
 #define SIZE(node) (node ? node->size : 0)
+#define L(node) (node ? node->lchild : NULL)
 
 typedef struct Node {  
     int key;
@@ -73,6 +74,12 @@ Node *erase(Node *root, int key) {
     return root;
 }
 
+int search_top_k(Node *root, int k) {
+    if (root == NULL) return -1;
+    if (k - 1 == SIZE(L(root))) return root->key;
+    if (k <= SIZE(L(root))) return search_top_k(root->lchild, k);
+    return search_top_k(root->rchild, k - SIZE(L(root)) - 1);
+}
 
 void clear(Node *root) {
     if (root == NULL) return ;
@@ -104,6 +111,9 @@ int main() {
             case 2: {
                 printf("Search Result: %d\n", search(root, val));
             } break;
+            case 3: {
+                printf("Search rank %d, result: %d\n", val, search_top_k(root, val));
+            }
         }
         if (op != 2) {
             inorder_traversal(root); 
