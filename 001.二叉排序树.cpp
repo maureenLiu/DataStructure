@@ -9,17 +9,25 @@
 #include <stdlib.h>
 
 #define KEY(node) node ? node->key : 0
+#define SIZE(node) (node ? node->size : 0)
 
 typedef struct Node {  
     int key;
+    int size; //统计每棵树的节点个数
     struct Node *lchild, *rchild;
 } Node;
 
 Node *getNewNode(int key) {
     Node *p = (Node *)malloc(sizeof(Node));
     p->key = key;
+    p->size = 1;
     p->lchild = p->rchild = NULL;
     return p;
+}
+
+void update_size(Node *root) {
+    root->size = SIZE(root->lchild) + SIZE(root->rchild) + 1;
+    return ;
 }
 
 Node *insert(Node *root, int key) {
@@ -27,6 +35,7 @@ Node *insert(Node *root, int key) {
     if (key == root->key) return root;
     if (key < root->key) root->lchild = insert(root->lchild, key);
     else root->rchild = insert(root->rchild, key);
+    update_size(root);
     return root;
 }
 
@@ -60,6 +69,7 @@ Node *erase(Node *root, int key) {
             root->lchild = erase(root->lchild, temp->key);
         }
     }
+    update_size(root);
     return root;
 }
 
@@ -75,7 +85,7 @@ void clear(Node *root) {
 void inorder_traversal(Node *root) {
     if (root == NULL) return ;
     inorder_traversal(root->lchild);
-    printf("(%d, %d, %d)\n", KEY(root), KEY(root->lchild), KEY(root->rchild));
+    printf("(%d[%d], %d, %d)\n", KEY(root), SIZE(root), KEY(root->lchild), KEY(root->rchild));
     inorder_traversal(root->rchild);
     return ;
 }
